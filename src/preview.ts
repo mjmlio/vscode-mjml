@@ -1,4 +1,6 @@
-import { basename } from 'path'
+import { execSync } from 'child_process';
+import { basename } from 'path';
+import path = require('path');
 import {
     commands,
     Disposable,
@@ -10,8 +12,9 @@ import {
     WebviewPanel,
     window,
     workspace,
-} from 'vscode'
-import { fixImages, isMJMLFile, mjmlToHtml } from './helper'
+} from 'vscode';
+
+import { fixImages, isMJMLFile, mjmlToHtml } from './helper';
 
 export default class Preview {
     private openedDocuments: TextDocument[] = []
@@ -96,6 +99,7 @@ export default class Preview {
         }
 
         const content: string = this.getContent(document)
+        
         const label: string = `MJML Preview - ${basename(activeTextEditor.document.fileName)}`
 
         if (!this.webview) {
@@ -129,17 +133,43 @@ export default class Preview {
             document = this.openedDocuments[0] || document
         }
 
-        const html: string = mjmlToHtml(
-            this.wrapInMjmlTemplate(document.getText()),
-            false,
-            false,
-            document.uri.fsPath,
-            'skip',
-        ).html
+        const getHtml = (document: TextDocument) => {
+            return mjmlToHtml(
+                this.wrapInMjmlTemplate(document.getText()),
+                false,
+                false,
+                document.uri.fsPath,
+                'skip',
+            ).html
+        }
+
+        // html is the final HTML that will be rendered
+        // renderedContent is the HTML returned by the custom render engine
+        let html: string, renderedContent: string | undefined = undefined;
+
+        // if the workspace is configured with a render engine, use that
+        if (workspace.getConfiguration('mjml').rendererPath) {
+            const renderer = workspace.getConfiguration('mjml').rendererPath;
+            const directory = path.dirname(document.uri.fsPath);
+
+            const content = document.getText();
+            const payload = {
+                directory,
+                content
+            }
+
+            const stdout =  execSync(`node ${renderer} ${JSON.stringify(payload)}`, {
+                input: JSON.stringify(payload)
+            }).toString();
+
+            renderedContent = JSON.parse(stdout).html || "Your configured MJML renderer did not return a valid output";
+        }
+
+        html = renderedContent ?? getHtml(document);
 
         if (html) {
-            this.addDocument(document)
-
+            // only add this document if there is no render engine
+            if (!renderedContent) this.addDocument(document)
             return this.setBackgroundColor(fixImages(html, document.uri.fsPath))
         }
 
