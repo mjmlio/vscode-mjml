@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "STDIN JSON payload",
+    "description": "This payload is written to the STDIN of the renderer script and needs to be parsed by it",
+    "type": "object",
+    "properties":{
+        "directory": {
+            "description": "parent directory of file being previewed",
+            "type": "string"
+        },
+        "filePath": {
+            "description": "absolute path of file being previewed",
+            "type": "string"
+        },
+        "content": {
+            "description": "MJML contents of file being previewed. It is recommended to use this instead of reading from the file because modifications to the file might not have been saved at the time it is previewed.",
+            "type": "string"
+        },
+        "options": {
+            "description": "any existing configuration options are passed here",
+            "type": "object",
+            "properties": {
+                "mjmlConfigPath": {
+                    "description": "path to MJML configuration file/directory",
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

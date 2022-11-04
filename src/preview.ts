@@ -14,7 +14,18 @@ import {
     workspace,
 } from 'vscode';
 
-import { fixImages, isMJMLFile, mjmlToHtml } from './helper';
+import { fixImages, getCWD, isMJMLFile, mjmlToHtml } from './helper';
+
+type TRenderEngineResponse = {
+    html: string;
+    errors: Array<TRenderEngineError>;
+}
+type TRenderEngineError = {
+    line: number;
+    message: string;
+    tagName: string;
+    formattedMessage: string;
+}
 
 export default class Preview {
     private openedDocuments: TextDocument[] = []
@@ -128,6 +139,17 @@ export default class Preview {
         }
     }
 
+    /**
+     * given a TRenderEngineResponse, returns string-formatted HTML to be rendered
+     */
+    private getRenderedContent(res: TRenderEngineResponse): string {
+        const errors = () => res.errors.map((err) => err.formattedMessage ?? err.message ?? (err.line && err.tagName ? `An error occurred on line ${err.line}:<${err.tagName}>` : "There were errors, but your render engine did not return a valid message")).join("\n\n");
+        
+        if (res.errors && res.errors.length > 0) return errors();
+        
+        return res.html;
+    }
+
     private getContent(document: TextDocument): string {
         if (!workspace.getConfiguration('mjml').switchOnSeparateFileChange) {
             document = this.openedDocuments[0] || document
@@ -155,14 +177,19 @@ export default class Preview {
             const content = document.getText();
             const payload = {
                 directory,
-                content
+                content,
+                filePath: document.uri.fsPath,
+                options: {
+                    mjmlConfigPath: getCWD(document.uri.fsPath)
+                }
             }
 
             const stdout =  execSync(`node ${renderer} ${JSON.stringify(payload)}`, {
                 input: JSON.stringify(payload)
             }).toString();
+            const result: TRenderEngineResponse = JSON.parse(stdout);
 
-            renderedContent = JSON.parse(stdout).html || "Your configured MJML renderer did not return a valid output";
+            renderedContent = this.getRenderedContent(result);
         }
 
         html = renderedContent ?? getHtml(document);
