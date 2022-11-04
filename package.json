@@ -202,6 +202,11 @@
                     "default": true,
                     "description": "Automatically switch previews when editing a different file.",
                     "type": "boolean"
+                },
+                "mjml.rendererPath": {
+                    "default": "",
+                    "description": "Path to a custom MJML-to-HTML transpiler Node.js script that will be used to render previews, instead of the default renderer.",
+                    "type": "string"
                 }
             }
         },
