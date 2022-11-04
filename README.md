@@ -168,27 +168,13 @@ Please see the [Nodemailer](https://nodemailer.com) documentation for more infor
 
 For most people, the built-in renderer is sufficient. However, if you need to use a custom transpiler (for example, to add a preprocessor), the following steps will help you:
 
-1. **Write a Node.js script for your renderer.** Your script should read a JSON object from STDIN. The JSON object will contain two properties: `directory` and `content`. Your script should handle transpiling MJML to HTML, along with any other preprocessing steps you require, and output a JSON object with properties `html` and `errors` to STDOUT.
+1. **Write a Node.js script for your renderer.** Your script should read a JSON object from STDIN. Your script should handle transpiling MJML to HTML, along with any other preprocessing steps you require, and output a JSON object.
 
-    The shapes of the STDIN/STDOUT objects are:
+    The schema of the STDIN/STDOUT objects are:
 
-    - STDIN (sent to your Node script by this extension):
+    - STDIN (sent to your Node script by `vscode-mjml`): see `./json-schema/custom-renderer/stdin-schema.json`
 
-    ```json
-    {
-        "directory": "name of the parent directory of the file being previewed",
-        "content": "MJML content of the file being previewed"
-    }
-    ```
-
-    - STDOUT (output from your Node script):
-
-    ```json
-    {
-        "html": "transpiled HTML to be rendered as your file's preview",
-        "errors": "an array of any errors that occur while processing the file's contents (formatted as strings). If this array is not empty, these errors will be rendered instead"
-    }
-    ```
+    - STDOUT (output from your Node script): see `./json-schema/custom-renderer/stdout-schema.json`
 
 2. **Update your workspace's `settings.json`**.
 
@@ -205,6 +191,10 @@ For most people, the built-in renderer is sufficient. However, if you need to us
     }
     ```
 -   Save and close this file. You don't need to restart VS Code for this to take effect.
+
+### Examples
+
+A sample custom renderer is provided in `./examples/custom-renderer.js`.
 
 ## Change Log
 
