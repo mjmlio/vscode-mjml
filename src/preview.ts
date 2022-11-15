@@ -171,7 +171,8 @@ export default class Preview {
 
         // if the workspace is configured with a render engine, use that
         if (workspace.getConfiguration('mjml').rendererPath) {
-            const renderer = workspace.getConfiguration('mjml').rendererPath;
+            const workspaceDir = workspace.workspaceFolders![0].uri.path;
+            const renderer = path.join(workspaceDir, workspace.getConfiguration('mjml').rendererPath);
             const directory = path.dirname(document.uri.fsPath);
 
             const content = document.getText();
