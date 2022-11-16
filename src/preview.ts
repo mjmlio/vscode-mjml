@@ -176,7 +176,7 @@ export default class Preview {
             
             const renderer = path.isAbsolute(rendererPath) ? rendererPath : path.join(workspaceDir, workspace.getConfiguration('mjml').rendererPath);
             
-            const directory = path.dirname(document.uri.fsPath);
+            const directory = process.cwd();
 
             const content = document.getText();
             const payload = {
