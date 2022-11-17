@@ -80,6 +80,7 @@ The following command is available:
 | `mjml.templateGallery` | `false` | Show the template gallery instead of quick pick. |
 | `mjml.templateGalleryAutoClose` | `true` | Automatically close template gallery when selecting a template. |
 | `mjml.switchOnSeparateFileChange` | `true` | Automatically switch previews when editing a different file. |
+| `mjml.rendererPath`               | default MJML-to-HTML transpiler | Path to a custom MJML-to-HTML transpiler Node.js script that will be used to render previews, instead of the default renderer. See the [Adding a Custom Renderer](#adding-a-custom-renderer) section for more information. |
 
 
 ## Snippets
@@ -159,6 +160,38 @@ Please see the [Nodemailer](https://nodemailer.com) documentation for more infor
     }
 }
 ```
+
+## Adding a Custom Renderer
+
+For most people, the built-in renderer is sufficient. However, if you need to use a custom transpiler (for example, to add a preprocessor), the following steps will help you:
+
+1. **Write a Node.js script for your renderer.** Your script should read a JSON object from STDIN. Your script should handle transpiling MJML to HTML, along with any other preprocessing steps you require, and output a JSON object.
+
+    The schema of the STDIN/STDOUT objects are:
+
+    - STDIN (sent to your Node script by `vscode-mjml`): see `./json-schema/custom-renderer/stdin-schema.json`
+
+    - STDOUT (output from your Node script): see `./json-schema/custom-renderer/stdout-schema.json`
+
+2. **Update your workspace's `settings.json`**.
+
+-   If your workspace has a `.vscode/settings.json` file, you'll need to update it. If it doesn't, create one:
+    ```bash
+    mkdir .vscode
+    touch .vscode/settings.json
+    ```
+-   Create a JSON object in your `settings.json` file, if it doesn't already exist.
+-   Add the following to your JSON object:
+    ```json
+    {
+        "mjml.rendererPath": "/absolute/path/of/custom/renderer/script.js"
+    }
+    ```
+-   Save and close this file. You don't need to restart VS Code for this to take effect.
+
+### Examples
+
+A sample custom renderer is provided in `./examples/custom-renderer.js`.
 
 ## Change Log
 

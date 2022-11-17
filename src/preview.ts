@@ -1,4 +1,6 @@
-import { basename } from 'path'
+import { execSync } from 'child_process';
+import { basename } from 'path';
+import path = require('path');
 import {
     commands,
     Disposable,
@@ -10,8 +12,20 @@ import {
     WebviewPanel,
     window,
     workspace,
-} from 'vscode'
-import { fixImages, isMJMLFile, mjmlToHtml } from './helper'
+} from 'vscode';
+
+import { fixImages, getCWD, isMJMLFile, mjmlToHtml } from './helper';
+
+type TRenderEngineResponse = {
+    html: string;
+    errors: Array<TRenderEngineError>;
+}
+type TRenderEngineError = {
+    line: number;
+    message: string;
+    tagName: string;
+    formattedMessage: string;
+}
 
 export default class Preview {
     private openedDocuments: TextDocument[] = []
@@ -96,6 +110,7 @@ export default class Preview {
         }
 
         const content: string = this.getContent(document)
+        
         const label: string = `MJML Preview - ${basename(activeTextEditor.document.fileName)}`
 
         if (!this.webview) {
@@ -124,22 +139,68 @@ export default class Preview {
         }
     }
 
+    /**
+     * given a TRenderEngineResponse, returns string-formatted HTML to be rendered
+     */
+    private getRenderedContent(res: TRenderEngineResponse): string {
+        const errors = () => res.errors.map((err) => err.formattedMessage ?? err.message ?? (err.line && err.tagName ? `An error occurred on line ${err.line}:<${err.tagName}>` : "There were errors, but your render engine did not return a valid message")).join("\n\n");
+        
+        if (res.errors && res.errors.length > 0) return errors();
+        
+        return res.html;
+    }
+
     private getContent(document: TextDocument): string {
         if (!workspace.getConfiguration('mjml').switchOnSeparateFileChange) {
             document = this.openedDocuments[0] || document
         }
 
-        const html: string = mjmlToHtml(
-            this.wrapInMjmlTemplate(document.getText()),
-            false,
-            false,
-            document.uri.fsPath,
-            'skip',
-        ).html
+        const getHtml = (document: TextDocument) => {
+            return mjmlToHtml(
+                this.wrapInMjmlTemplate(document.getText()),
+                false,
+                false,
+                document.uri.fsPath,
+                'skip',
+            ).html
+        }
+
+        // html is the final HTML that will be rendered
+        // renderedContent is the HTML returned by the custom render engine
+        let html: string, renderedContent: string | undefined = undefined;
+
+        // if the workspace is configured with a render engine, use that
+        if (workspace.getConfiguration('mjml').rendererPath) {
+            const workspaceDir = workspace.workspaceFolders![0].uri.path;
+            const rendererPath = workspace.getConfiguration('mjml').rendererPath;
+            
+            const renderer = path.isAbsolute(rendererPath) ? rendererPath : path.join(workspaceDir, workspace.getConfiguration('mjml').rendererPath);
+            
+            const directory = process.cwd();
+
+            const content = document.getText();
+            const payload = {
+                directory,
+                content,
+                filePath: document.uri.fsPath,
+                options: {
+                    mjmlConfigPath: getCWD(document.uri.fsPath)
+                }
+            }
+
+            const stdout =  execSync(`node ${renderer} ${JSON.stringify(payload)}`, {
+                input: JSON.stringify(payload)
+            }).toString();
+            const result: TRenderEngineResponse = JSON.parse(stdout);
+
+            renderedContent = this.getRenderedContent(result);
+        }
+
+        html = renderedContent ?? getHtml(document);
 
         if (html) {
-            this.addDocument(document)
-
+            // only add this document if there is no render engine
+            if (!renderedContent) this.addDocument(document)
             return this.setBackgroundColor(fixImages(html, document.uri.fsPath))
         }
 

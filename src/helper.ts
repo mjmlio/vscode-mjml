@@ -1,10 +1,9 @@
-import { existsSync, readFileSync, statSync } from 'fs'
-import { basename, dirname, join as joinPath, parse as parsePath } from 'path'
-import { TextDocument, TextEditor, window, workspace } from 'vscode'
-
-import { html as jsBeautify } from 'js-beautify'
-import { getExtension, getType as getMimeType } from 'mime'
-import * as mjml2html from 'mjml'
+import { existsSync, readFileSync, statSync } from 'fs';
+import { html as jsBeautify } from 'js-beautify';
+import { getExtension, getType as getMimeType } from 'mime';
+import * as mjml2html from 'mjml';
+import { basename, dirname, join as joinPath, parse as parsePath } from 'path';
+import { TextDocument, TextEditor, window, workspace } from 'vscode';
 
 export function renderMJML(
     cb: (content: string) => any,
@@ -107,7 +106,7 @@ export function beautifyHTML(mjml: string): string | undefined {
 
         return beautified
     } catch (error) {
-        window.showErrorMessage(error)
+        window.showErrorMessage(error as string)
 
         return
     }
@@ -121,7 +120,7 @@ export function getPath(): string {
     return ''
 }
 
-function getCWD(mjmlPath?: string): string {
+export function getCWD(mjmlPath?: string): string {
     if (workspace.rootPath) {
         return workspace.rootPath
     }
