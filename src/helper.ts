@@ -27,6 +27,7 @@ export function renderMJML(
         activeTextEditor.document.getText(),
         minify !== undefined ? minify : workspace.getConfiguration('mjml').minifyHtmlOutput,
         beautify !== undefined ? beautify : workspace.getConfiguration('mjml').beautifyHtmlOutput,
+        workspace.getConfiguration('mjml').mjmlConfigPathOutput,
     ).html
 
     if (content) {
