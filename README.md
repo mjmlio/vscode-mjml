@@ -1,6 +1,6 @@
 # MJML
 
-This is a fork of original @attilabuti VSC extension : (https://github.com/attilabuti/vscode-mjml)[https://github.com/attilabuti/vscode-mjml]
+This is a fork of original @attilabuti VSC extension : [https://github.com/attilabuti/vscode-mjml](https://github.com/attilabuti/vscode-mjml)
 
 MJML preview, lint, compile for Visual Studio Code.
 
