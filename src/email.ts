@@ -2,7 +2,7 @@ import { createReadStream, existsSync, readFileSync, statSync } from 'fs'
 import { basename, dirname, join as joinPath } from 'path'
 import { commands, Disposable, ProgressLocation, window, workspace } from 'vscode'
 
-import { getType as getMimeType } from 'mime'
+import mime from 'mime'
 import { connect as mailjetConnect } from 'node-mailjet'
 import { createTransport, getTestMessageUrl } from 'nodemailer'
 
@@ -168,17 +168,14 @@ export default class Email {
                 if (filePath && existsSync(filePath) && statSync(filePath).isFile()) {
                     if (mailer === 'nodemailer') {
                         attachments.push({
-                            cid:
-                                Math.random()
-                                    .toString(36)
-                                    .substring(2) + i,
+                            cid: Math.random().toString(36).substring(2) + i,
                             content: createReadStream(filePath),
                             filename: basename(filePath),
                             originalPath: imgPaths[i],
                         })
                     } else {
                         attachments.push({
-                            'Content-type': getMimeType(filePath),
+                            'Content-type': mime.getType(filePath),
                             Filename: i + '_' + basename(filePath),
                             content: readFileSync(filePath).toString('base64'),
                             originalPath: imgPaths[i],

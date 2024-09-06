@@ -1,10 +1,9 @@
 {
+    "$schema": "https://json.schemastore.org/tsconfig",
     "compilerOptions": {
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
-        "lib": [
-            "es6"
-        ],
+        "lib": ["es6"],
         "module": "commonjs",
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
@@ -21,13 +20,7 @@
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "target": "es6",
-        "typeRoots": [
-            "./node_modules/@types",
-            "./typings/"
-        ]
+        "typeRoots": ["./node_modules/@types", "./typings/"]
     },
-    "exclude": [
-        "./documentation",
-        "./node_modules/"
-    ]
+    "exclude": ["./documentation", "./node_modules/"]
 }

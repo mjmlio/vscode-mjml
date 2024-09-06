@@ -19,7 +19,13 @@ export default class Version {
                 const data: any = JSON.parse(readFileSync(filePath, 'utf8'))
                 window.showInformationMessage(`MJML version: ${data.version}`)
             } catch (error) {
-                window.showErrorMessage(error.message)
+                if (error instanceof Error) {
+                    window.showErrorMessage(error.message)
+                } else {
+                    window.showErrorMessage(
+                        'An unknown error occurred while reading the MJML version: ' + error,
+                    )
+                }
             }
         }
     }

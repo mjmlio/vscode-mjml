@@ -4,3 +4,7 @@ documentation/*
 !documentation/build.ts
 !documentation/tsconfig.json
 *.vsix
+
+.yarn
+.yarnrc.yml
+yarn.lock

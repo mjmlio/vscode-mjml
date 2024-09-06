@@ -53,7 +53,7 @@ export default class Template {
                 const response = await fetch(
                     'https://api.github.com/repos/mjmlio/email-templates/git/trees/master?recursive=1',
                 )
-                const { tree } = await response.json()
+                const { tree } = (await response.json()) as any
 
                 if (!tree) {
                     window.showErrorMessage('Error occurred while fetching templates list.')

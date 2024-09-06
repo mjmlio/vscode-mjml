@@ -41,13 +41,13 @@ export default class Screenshot {
                 title: `MJML needs to be rebuilt for your current platform. Please wait for the installation to finish...`,
             },
             async () => {
-                return new Promise((resolve, reject) => {
+                return new Promise<void>((resolve, reject) => {
                     process.chdir(joinPath(__dirname, '..'))
 
                     load(
-                        {
-                            loglevel: 'silent',
-                        },
+                        // {
+                        //     loglevel: 'silent',
+                        // },
                         () => {
                             npmCommands.rebuild(['phantomjs-prebuilt'], (error: any) => {
                                 if (error) {
@@ -201,10 +201,7 @@ export default class Screenshot {
 
                             if (multiple) {
                                 const fileName: string =
-                                    basename(file)
-                                        .split('.')
-                                        .slice(0, -1)
-                                        .join('.') +
+                                    basename(file).split('.').slice(0, -1).join('.') +
                                     '_' +
                                     imgWidth.toString()
                                 filePath = resolvePath(getPath(), `../${fileName}.${type}`)
@@ -234,7 +231,13 @@ export default class Screenshot {
 
                     await instance.exit()
                 } catch (error) {
-                    window.showErrorMessage(error.message)
+                    if (error instanceof Error) {
+                        window.showErrorMessage(error.message)
+                    } else {
+                        window.showErrorMessage(
+                            'An unknown error occurred while taking the screenshot: ' + error,
+                        )
+                    }
                 }
             },
         )

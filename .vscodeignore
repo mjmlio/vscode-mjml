@@ -1,5 +1,7 @@
 **/*.map
 .vscode/**
+.yarn
+.yarnrc.yml
 documentation/**
 !documentation/examples/*
 !documentation/images/*
