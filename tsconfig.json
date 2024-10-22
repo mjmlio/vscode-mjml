@@ -20,7 +20,8 @@
         "strictNullChecks": true,
         "strictPropertyInitialization": true,
         "target": "es6",
-        "typeRoots": ["./node_modules/@types", "./typings/"]
+        "typeRoots": ["./node_modules/@types", "./typings/"],
+        "esModuleInterop":true
     },
     "exclude": ["./documentation", "./node_modules/"]
 }

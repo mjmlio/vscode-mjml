@@ -1,345 +1,319 @@
 {
-    "name": "vscode-mjml",
-    "displayName": "MJML",
-    "description": "MJML preview, lint, compile for Visual Studio Code.",
-    "version": "2.0.0-alpha",
-    "publisher": "mjmlio",
-    "license": "MIT",
-    "readme": "README.md",
-    "icon": "images/icon.png",
-    "author": {
-        "name": "MJML",
-        "email": "cedric@derniercri.io",
-        "url": "https://mjml.io/"
-    },
-    "homepage": "https://github.com/mjmlio/vscode-mjml#readme",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/mjmlio/vscode-mjml"
-    },
-    "bugs": {
-        "url": "https://github.com/mjmlio/vscode-mjml/issues"
-    },
-    "galleryBanner": {
-        "color": "#f45e43",
-        "theme": "dark"
-    },
-    "categories": [
-        "Other",
-        "Linters",
-        "Snippets",
-        "Formatters",
-        "Programming Languages"
-    ],
-    "keywords": [
-        "vscode",
-        "mjml",
-        "preview",
-        "lint",
-        "syntax"
-    ],
-    "engines": {
-        "vscode": ">=1.93.0"
-    },
-    "main": "./out/extension",
-    "contributes": {
-        "configuration": {
-            "type": "object",
-            "title": "MJML",
-            "properties": {
-                "mjml.beautify": {
-                    "default": {
-                        "indent_size": 2,
-                        "wrap_attributes_indent_size": 2
-                    },
-                    "description": "Beautify options.",
-                    "type": "object"
-                },
-                "mjml.beautifyHtmlOutput": {
-                    "default": false,
-                    "description": "Beautify HTML output. (Works when `mjml.minifyHtmlOutput` aren't enabled.)",
-                    "type": "boolean"
-                },
-                "mjml.exportType": {
-                    "default": ".html",
-                    "description": "Specifies the file type of the output file.",
-                    "type": "string"
-                },
-                "mjml.lintEnable": {
-                    "default": true,
-                    "description": "Enable/disable MJML linter (requires restart).",
-                    "type": "boolean"
-                },
-                "mjml.lintWhenTyping": {
-                    "default": true,
-                    "description": "Whether the linter is run on type or on save.",
-                    "type": "boolean"
-                },
-                "mjml.mailFromName": {
-                    "default": "",
-                    "description": "Sender name.",
-                    "type": "string"
-                },
-                "mjml.mailRecipients": {
-                    "default": "",
-                    "description": "Comma separated list of recipients email addresses.",
-                    "type": "string"
-                },
-                "mjml.mailSender": {
-                    "default": "",
-                    "description": "Sender email address. (Mailjet: must be a verified sender.)",
-                    "type": "string"
-                },
-                "mjml.mailSubject": {
-                    "default": "",
-                    "description": "Email subject.",
-                    "type": "string"
-                },
-                "mjml.mailer": {
-                    "default": "mailjet",
-                    "description": "Send email with Nodemailer or Mailjet. Possible values are 'nodemailer' and 'mailjet'.",
-                    "type": "string"
-                },
-                "mjml.mailjetAPIKey": {
-                    "default": "",
-                    "description": "Mailjet API Key.",
-                    "type": "string"
-                },
-                "mjml.mailjetAPISecret": {
-                    "default": "",
-                    "description": "Mailjet API Secret.",
-                    "type": "string"
-                },
-                "mjml.minifyHtmlOutput": {
-                    "default": true,
-                    "description": "Minify HTML output.",
-                    "type": "boolean"
-                },
-                "mjml.nodemailer": {
-                    "default": {},
-                    "description": "Nodemailer configuration. Please see the Nodemailer (https://nodemailer.com) documentation for more information.",
-                    "type": "object"
-                },
-                "mjml.preserveFocus": {
-                    "default": true,
-                    "description": "Preserve focus of Text Editor after preview open.",
-                    "type": "boolean"
-                },
-                "mjml.autoPreview": {
-                    "default": false,
-                    "description": "Automatically update preview when switching between MJML documents.",
-                    "type": "boolean"
-                },
-                "mjml.previewBackgroundColor": {
-                    "default": "",
-                    "description": "Preview background color.",
-                    "type": "string"
-                },
-                "mjml.autoClosePreview": {
-                    "default": true,
-                    "description": "Automatically close preview when all open MJML documents have been closed.",
-                    "type": "boolean"
-                },
-                "mjml.screenshotQuality": {
-                    "default": 75,
-                    "description": "Screenshot quality.",
-                    "type": "number"
-                },
-                "mjml.screenshotType": {
-                    "default": "jpg",
-                    "description": "Screenshot type. Possible values are 'png', 'jpg', and 'jpeg'.",
-                    "type": "string"
-                },
-                "mjml.screenshotWidth": {
-                    "default": 650,
-                    "description": "Screenshot width.",
-                    "type": "number"
-                },
-                "mjml.screenshotWidths": {
-                    "default": [
-                        640,
-                        750
-                    ],
-                    "description": "Screenshot widths.",
-                    "type": "array"
-                },
-                "mjml.updateWhenTyping": {
-                    "default": true,
-                    "description": "Update preview when typing.",
-                    "type": "boolean"
-                },
-                "mjml.showSaveDialog": {
-                    "default": false,
-                    "description": "Show the save as dialog instead of input box.",
-                    "type": "boolean"
-                },
-                "mjml.templateGallery": {
-                    "default": false,
-                    "description": "Show the template gallery instead of quick pick.",
-                    "type": "boolean"
-                },
-                "mjml.templateGalleryAutoClose": {
-                    "default": true,
-                    "description": "Automatically close template gallery when selecting a template.",
-                    "type": "boolean"
-                },
-                "mjml.switchOnSeparateFileChange": {
-                    "default": true,
-                    "description": "Automatically switch previews when editing a different file.",
-                    "type": "boolean"
-                },
-                "mjml.mjmlConfigPath": {
-                    "default": "",
-                    "description": "The path or directory of the .mjmlconfig (or .mjmlconfig.js) file (for custom components use)",
-                    "type": "string"
-                }
-            }
+  "name": "vscode-mjml",
+  "displayName": "MJML Official",
+  "description": "MJML preview, lint, compile for Visual Studio Code.",
+  "version": "2.0.0",
+  "publisher": "mjmlio",
+  "license": "MIT",
+  "readme": "README.md",
+  "icon": "images/icon.png",
+  "author": {
+    "name": "MJML",
+    "email": "cedric@derniercri.io",
+    "url": "https://mjml.io/"
+  },
+  "homepage": "https://github.com/mjmlio/vscode-mjml#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mjmlio/vscode-mjml"
+  },
+  "bugs": {
+    "url": "https://github.com/mjmlio/vscode-mjml/issues"
+  },
+  "galleryBanner": {
+    "color": "#f45e43",
+    "theme": "dark"
+  },
+  "categories": [
+    "Other",
+    "Linters",
+    "Snippets",
+    "Formatters",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "vscode",
+    "mjml",
+    "preview",
+    "lint",
+    "syntax"
+  ],
+  "engines": {
+    "vscode": ">=1.93.0"
+  },
+  "main": "./out/extension",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "MJML",
+      "properties": {
+        "mjml.beautify": {
+          "default": {
+            "indent_size": 2,
+            "wrap_attributes_indent_size": 2
+          },
+          "description": "Beautify options.",
+          "type": "object"
         },
-        "commands": [
-            {
-                "command": "mjml.previewToSide",
-                "title": "Open Preview to the Side",
-                "category": "MJML",
-                "icon": {
-                    "light": "./resources/icons/preview_icon_light.svg",
-                    "dark": "./resources/icons/preview_icon_dark.svg"
-                }
-            },
-            {
-                "command": "mjml.exportHTML",
-                "title": "Export HTML",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.copyHTML",
-                "title": "Copy HTML",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.documentation",
-                "title": "Documentation",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.screenshot",
-                "title": "Screenshot",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.multipleScreenshots",
-                "title": "Multiple Screenshots",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.migrate",
-                "title": "Migrate",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.sendEmail",
-                "title": "Send Email",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.template",
-                "title": "Template",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.beautify",
-                "title": "Beautify",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.searchInDocumentation",
-                "title": "Search in MJML documentation",
-                "category": "MJML"
-            },
-            {
-                "command": "mjml.version",
-                "title": "Version",
-                "category": "MJML"
-            }
-        ],
-        "languages": [
-            {
-                "id": "mjml",
-                "extensions": [
-                    ".mjml"
-                ],
-                "aliases": [
-                    "MJML",
-                    "mjml"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "mjml",
-                "scopeName": "text.mjml.basic",
-                "path": "./syntaxes/MJML.tmLanguage"
-            }
-        ],
-        "snippets": [
-            {
-                "language": "mjml",
-                "path": "./snippets/mjml.json"
-            }
-        ],
-        "menus": {
-            "editor/title": [
-                {
-                    "when": "editorLangId == mjml",
-                    "command": "mjml.previewToSide",
-                    "group": "navigation"
-                }
-            ],
-            "editor/context": [
-                {
-                    "when": "editorLangId == mjml",
-                    "command": "mjml.searchInDocumentation",
-                    "group": "mjml"
-                }
-            ]
+        "mjml.beautifyHtmlOutput": {
+          "default": false,
+          "description": "Beautify HTML output. (Works when `mjml.minifyHtmlOutput` aren't enabled.)",
+          "type": "boolean"
+        },
+        "mjml.exportType": {
+          "default": ".html",
+          "description": "Specifies the file type of the output file.",
+          "type": "string"
+        },
+        "mjml.lintEnable": {
+          "default": true,
+          "description": "Enable/disable MJML linter (requires restart).",
+          "type": "boolean"
+        },
+        "mjml.lintWhenTyping": {
+          "default": true,
+          "description": "Whether the linter is run on type or on save.",
+          "type": "boolean"
+        },
+        "mjml.mailFromName": {
+          "default": "",
+          "description": "Sender name.",
+          "type": "string"
+        },
+        "mjml.mailRecipients": {
+          "default": "",
+          "description": "Comma separated list of recipients email addresses.",
+          "type": "string"
+        },
+        "mjml.mailSender": {
+          "default": "",
+          "description": "Sender email address. (Mailjet: must be a verified sender.)",
+          "type": "string"
+        },
+        "mjml.mailSubject": {
+          "default": "",
+          "description": "Email subject.",
+          "type": "string"
+        },
+        "mjml.mailer": {
+          "default": "mailjet",
+          "description": "Send email with Nodemailer or Mailjet. Possible values are 'nodemailer' and 'mailjet'.",
+          "type": "string"
+        },
+        "mjml.mailjetAPIKey": {
+          "default": "",
+          "description": "Mailjet API Key.",
+          "type": "string"
+        },
+        "mjml.mailjetAPISecret": {
+          "default": "",
+          "description": "Mailjet API Secret.",
+          "type": "string"
+        },
+        "mjml.minifyHtmlOutput": {
+          "default": true,
+          "description": "Minify HTML output.",
+          "type": "boolean"
+        },
+        "mjml.nodemailer": {
+          "default": {},
+          "description": "Nodemailer configuration. Please see the Nodemailer (https://nodemailer.com) documentation for more information.",
+          "type": "object"
+        },
+        "mjml.preserveFocus": {
+          "default": true,
+          "description": "Preserve focus of Text Editor after preview open.",
+          "type": "boolean"
+        },
+        "mjml.autoPreview": {
+          "default": false,
+          "description": "Automatically update preview when switching between MJML documents.",
+          "type": "boolean"
+        },
+        "mjml.previewBackgroundColor": {
+          "default": "",
+          "description": "Preview background color.",
+          "type": "string"
+        },
+        "mjml.autoClosePreview": {
+          "default": true,
+          "description": "Automatically close preview when all open MJML documents have been closed.",
+          "type": "boolean"
+        },
+        "mjml.screenshotQuality": {
+          "default": 75,
+          "description": "Screenshot quality.",
+          "type": "number"
+        },
+        "mjml.screenshotType": {
+          "default": "jpg",
+          "description": "Screenshot type. Possible values are 'png', 'jpg', and 'jpeg'.",
+          "type": "string"
+        },
+        "mjml.screenshotWidth": {
+          "default": 650,
+          "description": "Screenshot width.",
+          "type": "number"
+        },
+        "mjml.screenshotWidths": {
+          "default": [
+            640,
+            750
+          ],
+          "description": "Screenshot widths.",
+          "type": "array"
+        },
+        "mjml.updateWhenTyping": {
+          "default": true,
+          "description": "Update preview when typing.",
+          "type": "boolean"
+        },
+        "mjml.showSaveDialog": {
+          "default": false,
+          "description": "Show the save as dialog instead of input box.",
+          "type": "boolean"
+        },
+        "mjml.templateGallery": {
+          "default": false,
+          "description": "Show the template gallery instead of quick pick.",
+          "type": "boolean"
+        },
+        "mjml.templateGalleryAutoClose": {
+          "default": true,
+          "description": "Automatically close template gallery when selecting a template.",
+          "type": "boolean"
+        },
+        "mjml.switchOnSeparateFileChange": {
+          "default": true,
+          "description": "Automatically switch previews when editing a different file.",
+          "type": "boolean"
+        },
+        "mjml.mjmlConfigPath": {
+          "default": "",
+          "description": "The path or directory of the .mjmlconfig (or .mjmlconfig.js) file (for custom components use)",
+          "type": "string"
         }
+      }
     },
-    "scripts": {
-        "build": "tsc -p ./",
-        "build:watch": "tsc -watch -p ./",
-        "prepackage": "rm -rf dist/ out/",
-        "vscode:prepublish": "yarn build",
-        "package": "vsce package --no-dependencies && mkdir -p dist && mv *.vsix dist",
-        "package:install": "code --install-extension dist/*.vsix",
-        "deploy": "run-s deploy:vscode run-s deploy:ovsx",
-        "deploy:vscode": "vsce publish --no-dependencies",
-        "deploy:ovsx": "ovsx publish --no-dependencies"
-    },
-    "devDependencies": {
-        "@types/copy-paste": "^1.1.33",
-        "@types/file-url": "^3.0.2",
-        "@types/js-beautify": "^1.14.3",
-        "@types/node": "*",
-        "@types/node-fetch": "^2.6.11",
-        "@types/nodemailer": "^6.4.15",
-        "@types/npm": "^7.19.3",
-        "@types/vscode": "^1.93.0",
-        "highlight.js": "^11.10.0",
-        "markdown-it": "^14.1.0",
-        "markdown-it-anchor": "^9.1.0",
-        "npm-run-all": "^4.1.5",
-        "typescript": "^5.5.4",
-        "vscode-test": "^1.6.1"
-    },
-    "dependencies": {
-        "copy-paste": "^1.5.3",
-        "js-beautify": "^1.15.1",
-        "mime": "^4.0.4",
-        "mjml": "^4.15.3",
-        "node-fetch": "^3.3.2",
-        "node-mailjet": "^6.0.6",
-        "nodemailer": "^6.9.15",
-        "npm": "^10.8.3",
-        "phantom": "^6.3.0"
+    "commands": [
+      {
+        "command": "mjml.previewToSide",
+        "title": "Open Preview to the Side",
+        "category": "MJML",
+        "icon": {
+          "light": "./resources/icons/preview_icon_light.svg",
+          "dark": "./resources/icons/preview_icon_dark.svg"
+        }
+      },
+      {
+        "command": "mjml.exportHTML",
+        "title": "Export HTML",
+        "category": "MJML"
+      },
+      {
+        "command": "mjml.copyHTML",
+        "title": "Copy HTML",
+        "category": "MJML"
+      },
+      {
+        "command": "mjml.documentation",
+        "title": "Documentation",
+        "category": "MJML"
+      },
+      {
+        "command": "mjml.sendEmail",
+        "title": "Send Email",
+        "category": "MJML"
+      },
+      {
+        "command": "mjml.template",
+        "title": "Template",
+        "category": "MJML"
+      },
+      {
+        "command": "mjml.searchInDocumentation",
+        "title": "Search in MJML documentation",
+        "category": "MJML"
+      },
+      {
+        "command": "mjml.version",
+        "title": "Version",
+        "category": "MJML"
+      }
+    ],
+    "languages": [
+      {
+        "id": "mjml",
+        "extensions": [
+          ".mjml"
+        ],
+        "aliases": [
+          "MJML",
+          "mjml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mjml",
+        "scopeName": "text.mjml.basic",
+        "path": "./syntaxes/MJML.tmLanguage"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "mjml",
+        "path": "./snippets/mjml.json"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "when": "editorLangId == mjml",
+          "command": "mjml.previewToSide",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "editorLangId == mjml",
+          "command": "mjml.searchInDocumentation",
+          "group": "mjml"
+        }
+      ]
     }
+  },
+  "scripts": {
+    "build": "tsc -p ./",
+    "build:watch": "tsc -watch -p ./",
+    "prepackage": "rm -rf dist/ out/",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package && mkdir -p dist && mv *.vsix dist",
+    "package:install": "code --install-extension dist/*.vsix",
+    "deploy": "run-s deploy:vscode run-s deploy:ovsx",
+    "deploy:vscode": "vsce publish --no-dependencies",
+    "deploy:ovsx": "ovsx publish --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/file-url": "^3.0.2",
+    "@types/js-beautify": "^1.14.3",
+    "@types/node": "^18.00",
+    "@types/nodemailer": "^6.4.15",
+    "@types/npm": "^7.19.3",
+    "@types/vscode": "^1.93.0",
+    "@vscode/vsce": "latest",
+    "highlight.js": "^11.10.0",
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.1.0",
+    "typescript": "^5.5.4",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "@types/mime": "^3.0.4",
+    "mime": "^3.0.0",
+    "mjml": "^5.0.0-alpha.6",
+    "node-mailjet": "^6.0.6",
+    "nodemailer": "^6.9.15"
+  }
 }
