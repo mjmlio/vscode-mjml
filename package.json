@@ -291,9 +291,8 @@
     "vscode:prepublish": "npm run build",
     "package": "vsce package && mkdir -p dist && mv *.vsix dist",
     "package:install": "code --install-extension dist/*.vsix",
-    "deploy": "run-s deploy:vscode run-s deploy:ovsx",
-    "deploy:vscode": "vsce publish --no-dependencies",
-    "deploy:ovsx": "ovsx publish --no-dependencies"
+    "deploy:vscode": "vsce publish",
+    "deploy:ovsx": "ovsx publish"
   },
   "devDependencies": {
     "@types/file-url": "^3.0.2",
