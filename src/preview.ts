@@ -121,7 +121,7 @@ export default class Preview {
       document = this.openedDocuments[0] || document
     }
 
-    const { html, errors } = await mjmlToHtml(
+    const { html } = await mjmlToHtml(
       this.wrapInMjmlTemplate(document.getText()),
       false,
       false,

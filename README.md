@@ -74,7 +74,7 @@ The following command is available:
 | `mjml.screenshotWidth` | `650` | Screenshot width. |
 | `mjml.screenshotWidths` | `640,750` | Screenshot widths. |
 | `mjml.updateWhenTyping` | `true` | Update preview when typing. |
-| `mjml.previewBackgroundColor` | ` ` | Preview background color. |
+| `mjml.previewBackgroundColor` | `#FFFFFF` | Preview background color. |
 | `mjml.autoClosePreview` | `true` | Automatically close preview when all open MJML documents have been closed. |
 | `mjml.showSaveDialog` | `false` | Show the save as dialog instead of input box. |
 | `mjml.templateGallery` | `false` | Show the template gallery instead of quick pick. |

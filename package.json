@@ -131,7 +131,7 @@
           "type": "boolean"
         },
         "mjml.previewBackgroundColor": {
-          "default": "",
+          "default": "#FFFFFF",
           "description": "Preview background color.",
           "type": "string"
         },
