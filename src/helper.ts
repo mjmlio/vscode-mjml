@@ -6,45 +6,6 @@ import mime from 'mime'
 
 import mjml2html from 'mjml'
 
-export async function renderMJML(
-  cb: (content: string) => any,
-  fixImg?: boolean,
-  minify?: boolean,
-  beautify?: boolean,
-): Promise<void> {
-  const activeTextEditor: TextEditor | undefined = window.activeTextEditor
-  if (!activeTextEditor) {
-    return
-  }
-
-  if (!isMJMLFile(activeTextEditor.document)) {
-    window.showWarningMessage('This is not a MJML document!')
-
-    return
-  }
-
-  const result = await mjmlToHtml(
-    activeTextEditor.document.getText(),
-    minify !== undefined ? minify : workspace.getConfiguration('mjml').minifyHtmlOutput,
-    beautify !== undefined ? beautify : workspace.getConfiguration('mjml').beautifyHtmlOutput,
-    undefined,
-    'skip',
-    workspace.getConfiguration('mjml').mjmlConfigPath,
-  )
-
-  let content = result.html
-
-  if (content) {
-    if (fixImg !== undefined && fixImg) {
-      content = fixImages(content, getPath())
-    }
-
-    return cb(content)
-  } else {
-    window.showErrorMessage(`MJMLError: Failed to parse file ${basename(getPath())}`)
-  }
-}
-
 export function isMJMLFile(document: TextDocument): boolean {
   return (
     document.languageId === 'mjml' &&
@@ -53,7 +14,7 @@ export function isMJMLFile(document: TextDocument): boolean {
 }
 
 export async function mjmlToHtml(
-  mjml: string,
+  mjmlContent: string,
   minify: boolean,
   beautify: boolean,
   path?: string,
@@ -65,9 +26,12 @@ export async function mjmlToHtml(
       path = getPath()
     }
 
-    return await mjml2html(mjml, {
+    const keepComments = workspace.getConfiguration('mjml').get<boolean>('keepComments', true)
+
+    return await mjml2html(mjmlContent, {
       beautify,
       filePath: path,
+      keepComments,
       minify,
       mjmlConfigPath: mjmlConfigPath
         ? isAbsolute(mjmlConfigPath)
@@ -125,4 +89,42 @@ function encodeImage(filePath: string, original: string): string {
   }
 
   return original
+}
+
+export async function renderMJML(
+  cb: (content: string) => any,
+  fixImg?: boolean,
+  minify?: boolean,
+  beautify?: boolean,
+): Promise<void> {
+  const activeTextEditor: TextEditor | undefined = window.activeTextEditor
+  if (!activeTextEditor) {
+    return
+  }
+
+  if (!isMJMLFile(activeTextEditor.document)) {
+    window.showWarningMessage('This is not a MJML document!')
+    return
+  }
+
+  const result = await mjmlToHtml(
+    activeTextEditor.document.getText(),
+    minify !== undefined ? minify : workspace.getConfiguration('mjml').minifyHtmlOutput,
+    beautify !== undefined ? beautify : workspace.getConfiguration('mjml').beautifyHtmlOutput,
+    undefined,
+    'skip',
+    workspace.getConfiguration('mjml').mjmlConfigPath,
+  )
+
+  let content = result.html
+
+  if (content) {
+    if (fixImg !== undefined && fixImg) {
+      content = fixImages(content, getPath())
+    }
+
+    return cb(content)
+  } else {
+    window.showErrorMessage(`MJMLError: Failed to parse file ${basename(getPath())}`)
+  }
 }
