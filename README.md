@@ -53,6 +53,7 @@ The following command is available:
 | `mjml.beautifyHtmlOutput`         | `false`   | Beautify HTML output. (Works when `mjml.minifyHtmlOutput` aren't enabled.)                                        |
 | `mjml.beautify`                   | `{}`      | Prettier options for beautifying MJML. (Priority: .prettierrc > mjml.beautify > defaults). See [Prettier options](https://prettier.io/docs/en/options.html). |
 | `mjml.exportType`                 | `.html`   | Specifies the file type of the output file.                                                                       |
+| `mjml.keepComments`               | `true`    | Keep custom comments in HTML output when exporting MJML files.                                                    |
 | `mjml.lintEnable`                 | `true`    | Enable/disable MJML linter (requires restart).                                                                    |
 | `mjml.lintWhenTyping`             | `true`    | Whether the linter is run on type or on save.                                                                     |
 | `mjml.mailFromName`               | ` `       | Sender name.                                                                                                      |
