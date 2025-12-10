@@ -11,6 +11,19 @@
     "description": "MJML Attributes",
     "scope": "source.mjml"
   },
+  "mjhtmlattributes": {
+    "prefix": "mjhtmlattributes",
+    "body": ["<mj-html-attributes>"],
+    "body": [
+      "<mj-html-attributes>",
+      "\t<mj-selector path=\"$1\">",
+      "\t\t<mj-html-attribute name=\"$2\">$0</mj-html-attribute>",
+      "\t</mj-selector>",
+      "</mj-html-attributes>"
+    ],
+    "description": "MJML HTML Attributes",
+    "scope": "source.mjml"
+  },
   "mjbody": {
     "prefix": "mjbody",
     "body": ["<mj-body>", "\t$0", "</mj-body>"],

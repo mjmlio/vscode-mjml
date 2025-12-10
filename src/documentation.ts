@@ -1,9 +1,9 @@
-import { existsSync, readFileSync, statSync } from 'fs'
-import { join as joinPath } from 'path'
+import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 import {
   commands,
   ExtensionContext,
-  TextDocument,
   TextEditor,
   Uri,
   ViewColumn,
@@ -13,7 +13,6 @@ import {
 } from 'vscode'
 
 export default class Documentation {
-  private content: string = ''
   private context: ExtensionContext
   private webview: WebviewPanel | undefined
   private webviewViewColumn: ViewColumn | undefined
@@ -42,11 +41,11 @@ export default class Documentation {
 
   private displayWebView(): void {
     if (!this.webview) {
-      const documentationPath: string = joinPath(__dirname, '../documentation/documentation.html')
+      const documentationPath: string = path.join(__dirname, '../documentation/documentation.html')
       if (
         !documentationPath ||
-        !existsSync(documentationPath) ||
-        !statSync(documentationPath).isFile()
+        !fs.existsSync(documentationPath) ||
+        !fs.statSync(documentationPath).isFile()
       ) {
         return
       }
@@ -63,7 +62,12 @@ export default class Documentation {
         },
       )
 
-      this.webview.webview.html = this.getWebviewContent(documentationPath)
+      const html = fs.readFileSync(documentationPath, 'utf8')
+      const rootUri = this.webview.webview.asWebviewUri(
+        Uri.file(path.join(__dirname, '../documentation')),
+      )
+      const htmlWithImages = html.replace(/{{root}}/g, rootUri.toString())
+      this.webview.webview.html = htmlWithImages
 
       this.webview.onDidChangeViewState(() => {
         if (this.webview && this.webviewViewColumn !== this.webview.viewColumn) {
@@ -80,22 +84,6 @@ export default class Documentation {
     this.webview.reveal(this.webviewViewColumn)
 
     this.handleEvents()
-  }
-
-  private getWebviewContent(filePath: string): string {
-    if (!this.content) {
-      const rootPath: string = Uri.parse(joinPath(this.context.extensionPath, 'documentation'))
-        .with({
-          scheme: 'vscode-resource',
-        })
-        .toString()
-
-      this.content = readFileSync(filePath)
-        .toString()
-        .replace(/{{root}}/gi, rootPath)
-    }
-
-    return this.content
   }
 
   private handleEvents(): void {
@@ -119,13 +107,10 @@ export default class Documentation {
       return
     }
 
+    // Get selected text and clean it
     const text: string = activeTextEditor.document.getText(activeTextEditor.selection)
-    let anchor: string = text
-      .replace(/((\/|\<|\>)|^\s+|(\r?\n|\r)|\s.*)/gi, '')
-      .replace('mj-', '#mjml-')
-    if (!anchor.startsWith('#mjml-')) {
-      anchor = `#mjml-${anchor}`
-    }
+    const raw = text.replace(/<|>/g, '').trim()
+    let anchor = raw.startsWith('mj-') ? `#${raw}` : `#mj-${raw}`
 
     this.displayWebView()
     if (this.webview) {
@@ -137,16 +122,19 @@ export default class Documentation {
   }
 
   private async openExample(fileName: string): Promise<void> {
-    const filePath: string = joinPath(__dirname, '../documentation/examples/', `${fileName}.mjml`)
+    const examplePath = path.join(__dirname, '../documentation/examples/', `${fileName}.mjml`)
 
-    if (filePath && existsSync(filePath) && statSync(filePath).isFile()) {
-      const document: TextDocument = await workspace.openTextDocument({
-        content: readFileSync(filePath, 'utf8'),
-        language: 'mjml',
-      })
+    if (fs.existsSync(examplePath) && fs.statSync(examplePath).isFile()) {
+      // Create a temp file path
+      const tempFilePath = path.join(os.tmpdir(), `${fileName}-${Date.now()}.mjml`)
+      // Copy the example to the temp file
+      fs.copyFileSync(examplePath, tempFilePath)
 
+      // Open the temp file in the editor
+      const document = await workspace.openTextDocument(tempFilePath)
       await window.showTextDocument(document, {
         viewColumn: ViewColumn.One,
+        preview: false,
       })
 
       await commands.executeCommand('mjml.previewToSide')

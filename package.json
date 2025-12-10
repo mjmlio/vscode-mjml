@@ -2,7 +2,7 @@
   "name": "vscode-mjml",
   "displayName": "MJML Official",
   "description": "MJML preview, lint, compile for Visual Studio Code.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "publisher": "mjmlio",
   "license": "MIT",
   "readme": "README.md",
@@ -48,12 +48,9 @@
       "title": "MJML",
       "properties": {
         "mjml.beautify": {
-          "default": {
-            "indent_size": 2,
-            "wrap_attributes_indent_size": 2
-          },
-          "description": "Beautify options.",
-          "type": "object"
+          "type": "object",
+          "default": {},
+          "description": "Prettier options for beautifying MJML. (Priority: .prettierrc > mjml.beautify > defaults). See https://prettier.io/docs/en/options.html"
         },
         "mjml.beautifyHtmlOutput": {
           "default": false,
@@ -277,24 +274,24 @@
     "deploy:ovsx": "ovsx publish"
   },
   "devDependencies": {
-    "@types/file-url": "^3.0.2",
-    "@types/js-beautify": "^1.14.3",
     "@types/node": "^18.00",
     "@types/nodemailer": "^6.4.15",
     "@types/npm": "^7.19.3",
     "@types/vscode": "^1.93.0",
+    "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "latest",
     "highlight.js": "^11.10.0",
     "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^9.1.0",
-    "typescript": "^5.5.4",
-    "vscode-test": "^1.6.1"
+    "typescript": "^5.5.4"
   },
   "dependencies": {
     "@types/mime": "^3.0.4",
+    "dotenv": "^17.2.3",
     "mime": "^3.0.0",
-    "mjml": "^5.0.0-alpha.6",
+    "mjml": "^4.18.0",
     "node-mailjet": "^6.0.6",
-    "nodemailer": "^6.9.15"
+    "nodemailer": "^7.0.10",
+    "prettier": "^3.3.3"
   }
 }
