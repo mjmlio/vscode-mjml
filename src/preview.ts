@@ -113,7 +113,6 @@ export default class Preview {
     } else {
       this.webview.title = label
       this.webview.webview.html = content
-      this.webview.reveal(ViewColumn.Two)
     }
   }
 
