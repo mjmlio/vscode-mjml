@@ -5,7 +5,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ### [2.2.0] (2025-12-03)
 
-- [update] MJML to v4.17.1
+- [update] MJML to v4.18.0
 - [new] `MJML: Preview:` now loads automatically when opening example files from documentation
 - [fix] `MJML: Beautify` is working again
 - [fix] `MJML: Documentation`: is working again and uses the latest documentation

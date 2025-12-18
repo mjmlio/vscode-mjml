@@ -24,15 +24,21 @@ export default class Beautify {
 
         const defaultConfig = {
           parser: 'html',
-          printWidth: 240,
+          printWidth: 80,
           singleQuote: true,
         }
 
-        formattedDocument = await prettier.format(activeTextEditor.document.getText(), {
+        const finalConfig = {
           ...defaultConfig,
           ...vsCodeConfig,
           ...prettierrcConfig,
-        })
+        }
+
+        formattedDocument = await prettier.format(
+          activeTextEditor.document.getText(),
+          finalConfig,
+        )
+
       } catch (error) {
         window.showErrorMessage(
           'Beautify failed: ' + (error instanceof Error ? error.message : String(error)),

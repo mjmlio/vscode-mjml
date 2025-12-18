@@ -62,8 +62,6 @@ async function run(): Promise<void> {
       if (err) {
         return console.log(err)
       }
-
-      console.log('The file was saved!')
     })
   }
 }
@@ -153,8 +151,6 @@ async function getContent(): Promise<string> {
     content += '\n\n'
   }
 
-  console.log('Final documentation content:', content.slice(0, 500)) // Log first 500 chars
-
   return await tryItLive(
     await getImages(content.replace(/---[\s\S]*?---/, '').replace(/^\s+|\s+$/g, '')),
   )
@@ -212,11 +208,9 @@ async function fetchFromGithub(url: string): Promise<string> {
 
   if (json.content && json.encoding == 'base64') {
     const content = Buffer.from(json.content, 'base64').toString()
-    console.log(`Fetched from ${url}:`, content.slice(0, 100))
     return content
   }
 
-  console.log(`No content fetched from ${url}`)
   return ''
 }
 

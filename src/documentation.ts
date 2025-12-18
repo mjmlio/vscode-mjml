@@ -1,9 +1,11 @@
 import * as fs from 'fs'
-import * as os from 'os'
+import { existsSync, readFileSync, statSync } from 'fs'
+import { join as joinPath } from 'path'
 import * as path from 'path'
 import {
   commands,
   ExtensionContext,
+  TextDocument,
   TextEditor,
   Uri,
   ViewColumn,
@@ -122,22 +124,19 @@ export default class Documentation {
   }
 
   private async openExample(fileName: string): Promise<void> {
-    const examplePath = path.join(__dirname, '../documentation/examples/', `${fileName}.mjml`)
+    const filePath: string = joinPath(__dirname, '../documentation/examples/', `${fileName}.mjml`)
 
-    if (fs.existsSync(examplePath) && fs.statSync(examplePath).isFile()) {
-      // Create a temp file path
-      const tempFilePath = path.join(os.tmpdir(), `${fileName}-${Date.now()}.mjml`)
-      // Copy the example to the temp file
-      fs.copyFileSync(examplePath, tempFilePath)
-
-      // Open the temp file in the editor
-      const document = await workspace.openTextDocument(tempFilePath)
-      await window.showTextDocument(document, {
-        viewColumn: ViewColumn.One,
-        preview: false,
+    if (filePath && existsSync(filePath) && statSync(filePath).isFile()) {
+      const document: TextDocument = await workspace.openTextDocument({
+        content: readFileSync(filePath, 'utf8'),
+        language: 'mjml',
       })
 
-      await commands.executeCommand('mjml.previewToSide')
+      await window.showTextDocument(document, {
+        viewColumn: ViewColumn.One,
+      })
+
     }
   }
+
 }
