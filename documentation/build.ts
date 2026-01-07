@@ -1,30 +1,29 @@
 'use strict'
 
+import 'dotenv/config'
 import * as fs from 'fs'
 import * as path from 'path'
+import fetch from 'node-fetch'
 
 import * as hljs from 'highlight.js'
 
 const md = require('markdown-it')({
   html: true,
   highlight: (str: string, lang: string) => {
-    if (lang && hljs.getLanguage(lang)) {
-      if (lang && hljs.getLanguage(lang)) {
-        try {
-          return `<div>${hljs.highlight(lang, str, true).value}</div>`
-        } catch (err) {}
-      }
+    if (lang && hljs.default.getLanguage(lang)) {
+      try {
+        return `<div>${hljs.default.highlight(str, { language: lang }).value}</div>`
+      } catch (err) {}
     }
-
     return ''
   },
 }).use(require('markdown-it-anchor'))
 
-let githubAccessToken: string = ''
+let githubAccessToken: string = process.env.GITHUB_ACCESS_TOKEN || ''
 
-let exampleFolder: string = './examples'
-let imagesFolder: string = './images'
-let documentationHTML: string = './documentation.html'
+let exampleFolder: string = './documentation/examples'
+let imagesFolder: string = './documentation/images'
+let documentationHTML: string = './documentation/documentation.html'
 
 async function run(): Promise<void> {
   clean()
@@ -63,8 +62,6 @@ async function run(): Promise<void> {
       if (err) {
         return console.log(err)
       }
-
-      console.log('The file was saved!')
     })
   }
 }
@@ -109,30 +106,30 @@ async function getContent(): Promise<string> {
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/basic.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/components.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/head_components.md',
-    'mjml-head-attributes/README.md',
-    'mjml-head-breakpoint/README.md',
-    'mjml-head-font/README.md',
-    'mjml-head-preview/README.md',
-    'mjml-head-style/README.md',
-    'mjml-head-title/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-attributes/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-breakpoint/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-font/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-preview/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-style/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-title/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/body_components.md',
-    'mjml-accordion/README.md',
-    'mjml-body/README.md',
-    'mjml-button/README.md',
-    'mjml-carousel/README.md',
-    'mjml-column/README.md',
-    'mjml-divider/README.md',
-    'mjml-group/README.md',
-    'mjml-hero/README.md',
-    'mjml-image/README.md',
-    'mjml-navbar/README.md',
-    'mjml-raw/README.md',
-    'mjml-section/README.md',
-    'mjml-social/README.md',
-    'mjml-spacer/README.md',
-    'mjml-table/README.md',
-    'mjml-text/README.md',
-    'mjml-wrapper/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-accordion/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-body/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-button/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-carousel/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-column/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-divider/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-group/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-hero/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-image/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-navbar/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-raw/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-section/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-social/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-spacer/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-table/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-text/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-wrapper/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/community-components.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/mjml-chart.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/create.md',
@@ -171,17 +168,10 @@ async function getImages(content: string): Promise<string> {
       let res = await fetch(match[2])
 
       await new Promise((resolve, reject) => {
-        const fileStream = fs.createWriteStream(`./images/${path.basename(match[2])}`)
-
+        const fileStream = fs.createWriteStream(`${imagesFolder}/${path.basename(match[2])}`)
         res.body.pipe(fileStream)
-
-        res.body.on('error', (err) => {
-          reject(err)
-        })
-
-        fileStream.on('finish', () => {
-          resolve(void 0)
-        })
+        res.body.on('error', reject)
+        fileStream.on('finish', () => resolve(void 0))
       })
     }
   }
@@ -209,11 +199,16 @@ async function getStyle(): Promise<string> {
 }
 
 async function fetchFromGithub(url: string): Promise<string> {
-  let response = await fetch(`${url}?access_token=${githubAccessToken}`)
+  let response = await fetch(url, {
+    headers: {
+      Authorization: `token ${githubAccessToken}`,
+    },
+  })
   let json = await response.json()
 
   if (json.content && json.encoding == 'base64') {
-    return new Buffer(json.content, 'base64').toString()
+    const content = Buffer.from(json.content, 'base64').toString()
+    return content
   }
 
   return ''
@@ -246,7 +241,7 @@ async function tryItLive(html: string): Promise<string> {
         .split('\\n')
         .forEach((line) => {
           fs.appendFileSync(
-            `./examples/${fileName}.mjml`,
+            `${exampleFolder}/${fileName}.mjml`,
             line.replace(/\\/g, '').toString() + '\n',
           )
         })

@@ -1,9 +1,9 @@
 import { createReadStream, existsSync, readFileSync, statSync } from 'fs'
 import { basename, dirname, join as joinPath } from 'path'
-import { commands, Disposable, ProgressLocation, window, workspace } from 'vscode'
+import { commands, Disposable, ProgressLocation, Uri, window, workspace } from 'vscode'
 
 import mime from 'mime'
-import { connect as mailjetConnect } from 'node-mailjet'
+import { Client } from 'node-mailjet'
 import { createTransport, getTestMessageUrl } from 'nodemailer'
 
 import { getPath, renderMJML } from './helper'
@@ -76,6 +76,22 @@ export default class Email {
   ): Promise<void> {
     const transportOptions: any = workspace.getConfiguration('mjml').nodemailer
 
+    if (!transportOptions || Object.keys(transportOptions).length === 0) {
+      const result = await window.showErrorMessage(
+        'Mail configuration is missing. Please configure "mjml.mailer" in your settings to use either Mailjet or Nodemailer and add your credentials.',
+        'Read Documentation',
+      )
+
+      if (result === 'Read Documentation') {
+        commands.executeCommand(
+          'vscode.open',
+          Uri.parse('https://github.com/mjmlio/vscode-mjml?tab=readme-ov-file#settings'),
+        )
+      }
+
+      return
+    }
+
     await createTransport(transportOptions)
       .sendMail({
         attachments,
@@ -113,31 +129,54 @@ export default class Email {
     html: string,
     attachments: Attachments[],
   ): Promise<void> {
+    const apiKey = workspace.getConfiguration('mjml').mailjetAPIKey
+    const apiSecret = workspace.getConfiguration('mjml').mailjetAPISecret
+    const sender = workspace.getConfiguration('mjml').mailSender
+    const fromName = workspace.getConfiguration('mjml').mailFromName
+
+    if (!apiKey || !apiSecret) {
+      window.showErrorMessage(
+        'Mailjet API Key and Secret are required. Please configure them in settings.',
+      )
+      return
+    }
+
+    const mailjetClient = new Client({
+      apiKey: apiKey,
+      apiSecret: apiSecret,
+    })
+
     const recipientList: Array<{ Email: string }> = recipients
       .split(',')
       .map((emailAddress: string) => {
-        return { Email: emailAddress }
+        return { Email: emailAddress.trim() }
       })
 
-    await mailjetConnect(
-      workspace.getConfiguration('mjml').mailjetAPIKey,
-      workspace.getConfiguration('mjml').mailjetAPISecret,
-    )
-      .post('send')
-      .request({
-        FromEmail: workspace.getConfiguration('mjml').mailSender,
-        FromName: workspace.getConfiguration('mjml').mailFromName,
-        'Html-part': html,
-        Inline_attachments: attachments,
-        Recipients: recipientList,
-        Subject: subject,
-      })
-      .then(() => {
-        window.showInformationMessage('Mail has been sent successfully.')
-      })
-      .catch((error: any) => {
-        window.showErrorMessage(error.message)
-      })
+    try {
+      await mailjetClient
+        .post('send', { version: 'v3.1' })
+        .request({
+          Messages: [
+            {
+              From: { Email: sender, Name: fromName },
+              To: recipientList,
+              Subject: subject,
+              HTMLPart: html,
+              Attachments: attachments.map((att) => ({
+                'Content-Type': att['Content-type'],
+                Filename: att.Filename,
+                'Base64Content': att.content,
+              })),
+            },
+          ],
+        })
+
+      window.showInformationMessage('Mail has been sent successfully.')
+    } catch (error) {
+      window.showErrorMessage(
+        'Failed to send email: ' + (error instanceof Error ? error.message : String(error)),
+      )
+    }
   }
 
   private createAttachments(content: string, mjmlPath: string, mailer?: string): Attachments[] {
