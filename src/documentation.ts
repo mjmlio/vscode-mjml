@@ -1,7 +1,5 @@
 import * as fs from 'fs'
 import { existsSync, readFileSync, statSync } from 'fs'
-import { join as joinPath } from 'path'
-import * as path from 'path'
 import {
   commands,
   ExtensionContext,
@@ -43,12 +41,9 @@ export default class Documentation {
 
   private displayWebView(): void {
     if (!this.webview) {
-      const documentationPath: string = path.join(__dirname, '../documentation/documentation.html')
-      if (
-        !documentationPath ||
-        !fs.existsSync(documentationPath) ||
-        !fs.statSync(documentationPath).isFile()
-      ) {
+      const documentationPath: string = this.context.asAbsolutePath('documentation/documentation.html')
+      if (!fs.existsSync(documentationPath)) {
+        window.showErrorMessage(`Documentation file not found at ${documentationPath}`)
         return
       }
 
@@ -59,14 +54,14 @@ export default class Documentation {
         {
           enableFindWidget: true,
           enableScripts: true,
-          localResourceRoots: [Uri.parse(this.context.extensionPath)],
+          localResourceRoots: [Uri.file(this.context.extensionPath)],
           retainContextWhenHidden: true,
         },
       )
 
       const html = fs.readFileSync(documentationPath, 'utf8')
       const rootUri = this.webview.webview.asWebviewUri(
-        Uri.file(path.join(__dirname, '../documentation')),
+        Uri.file(this.context.asAbsolutePath('documentation')),
       )
       const htmlWithImages = html.replace(/{{root}}/g, rootUri.toString())
       this.webview.webview.html = htmlWithImages
@@ -124,7 +119,7 @@ export default class Documentation {
   }
 
   private async openExample(fileName: string): Promise<void> {
-    const filePath: string = joinPath(__dirname, '../documentation/examples/', `${fileName}.mjml`)
+    const filePath: string = this.context.asAbsolutePath(`documentation/examples/${fileName}.mjml`)
 
     if (filePath && existsSync(filePath) && statSync(filePath).isFile()) {
       const document: TextDocument = await workspace.openTextDocument({
