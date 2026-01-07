@@ -60,7 +60,7 @@ The following command is available:
 | `mjml.mailRecipients`             | ` `       | Comma separated list of recipients email addresses.                                                               |
 | `mjml.mailSender`                 | ` `       | Sender email address. (Mailjet: must be a verified sender.)                                                       |
 | `mjml.mailSubject`                | ` `       | Email subject.                                                                                                    |
-| `mjml.mailer`                     | `mailjet` | Send email with Nodemailer or Mailjet. Possible values are 'nodemailer' and 'mailjet'.                            |
+| `mjml.mailer`                     | `mailjet` | Send email with Nodemailer or Mailjet. Possible values are 'nodemailer' and 'mailjet'. See examples of [Nodemailer config](https://github.com/mjmlio/vscode-mjml?tab=readme-ov-file#nodemailer-configuration)                           |
 | `mjml.mailjetAPIKey`              | ` `       | Mailjet API Key.                                                                                                  |
 | `mjml.mailjetAPISecret`           | ` `       | Mailjet API Secret.                                                                                               |
 | `mjml.minifyHtmlOutput`           | `true`    | Minify HTML output.                                                                                               |

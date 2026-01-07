@@ -1,6 +1,6 @@
 import { createReadStream, existsSync, readFileSync, statSync } from 'fs'
 import { basename, dirname, join as joinPath } from 'path'
-import { commands, Disposable, ProgressLocation, window, workspace } from 'vscode'
+import { commands, Disposable, ProgressLocation, Uri, window, workspace } from 'vscode'
 
 import mime from 'mime'
 import { Client } from 'node-mailjet'
@@ -75,6 +75,22 @@ export default class Email {
     attachments: Attachments[],
   ): Promise<void> {
     const transportOptions: any = workspace.getConfiguration('mjml').nodemailer
+
+    if (!transportOptions || Object.keys(transportOptions).length === 0) {
+      const result = await window.showErrorMessage(
+        'Mail configuration is missing. Please configure "mjml.mailer" in your settings to use either Mailjet or Nodemailer and add your credentials.',
+        'Read Documentation',
+      )
+
+      if (result === 'Read Documentation') {
+        commands.executeCommand(
+          'vscode.open',
+          Uri.parse('https://github.com/mjmlio/vscode-mjml?tab=readme-ov-file#settings'),
+        )
+      }
+
+      return
+    }
 
     await createTransport(transportOptions)
       .sendMail({
