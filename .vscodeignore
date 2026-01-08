@@ -16,3 +16,5 @@ test/**
 ISSUE_TEMPLATE.md
 tsconfig.json
 tslint.json
+.env
+.idea/**

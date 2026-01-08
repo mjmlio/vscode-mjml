@@ -3,6 +3,10 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+### [2.2.2] (2026-01-08)
+
+- [fix] `MJML: Documentation`: bundle the documentation correctly
+
 ### [2.2.1] (2026-01-07)
 
 - [fix] `MJML: Documentation`: fixed issue with relative filepath which meant that the command was not working
