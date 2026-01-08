@@ -10,3 +10,4 @@ documentation/*
 yarn.lock
 
 .env
+.idea/**
