@@ -13,7 +13,7 @@ import {
   workspace,
 } from 'vscode'
 
-import { getPath, mjmlToHtml } from './helper'
+import { mjmlToHtml } from './helper'
 
 export default class Linter {
   private diagnosticCollection!: DiagnosticCollection
@@ -78,7 +78,7 @@ export default class Linter {
         textDocument.getText(),
         false,
         false,
-        getPath(),
+        textDocument.uri.fsPath,
         'strict',
         workspace.getConfiguration('mjml').mjmlConfigPath,
       )

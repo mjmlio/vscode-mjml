@@ -3,6 +3,18 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+### [2.3.0] (2026-04-28)
+
+- [update] MJML to v5.1.0
+- [fix] `mj-include` now works correctly (MJML 5 changed the default for `ignoreIncludes` to `true`; explicitly restored to `false` to preserve existing behaviour)
+- [chore] Removed stale `mjml-migrate` type declaration (package removed in MJML 5)
+- [new] `.mjmlconfig` files are now automatically recognised as JSON in the editor (resolves [#21](https://github.com/mjmlio/vscode-mjml/issues/21))
+- [fix] Preview no longer breaks when an HTML comment appears before the opening `<mjml>` tag (resolves [#57](https://github.com/mjmlio/vscode-mjml/issues/57))
+- [fix] Linter now correctly resolves `mj-include` paths and `.mjmlconfig` for documents that aren't the active editor (partially addresses [#2](https://github.com/mjmlio/vscode-mjml/issues/2), [#30](https://github.com/mjmlio/vscode-mjml/issues/30))
+- [improvement] Snippets now support dual-prefix triggering: every snippet can be activated by its keyword (e.g. `mjbody`) **or** by typing the opening tag directly (e.g. `<mj-body`).
+- [fix] Added `wordPattern` to `language-configuration.json` so that `<mj-tag` is treated as a single word token, ensuring snippet completion behaves consistently whether confirmed with Tab or Enter.
+- [chore] Extension is now bundled with esbuild: TypeScript source is compiled into a single `out/extension.js`. The `.vsix` drops from ~27 MB / 6 400 files to ~15 MB / 69 files, eliminating the VS Code marketplace performance warning.
+
 ### [2.2.2] (2026-01-08)
 
 - [fix] `MJML: Documentation`: bundle the documentation correctly

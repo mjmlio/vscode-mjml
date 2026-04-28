@@ -140,7 +140,8 @@ export default class Preview {
   }
 
   private wrapInMjmlTemplate(documentText: string): string {
-    if (documentText.trim().startsWith('<mjml')) {
+    const stripped = documentText.trim().replace(/^(\s*<!--[\s\S]*?-->\s*)*/m, '')
+    if (stripped.startsWith('<mjml')) {
       return documentText
     }
 

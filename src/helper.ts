@@ -31,6 +31,7 @@ export async function mjmlToHtml(
     return await mjml2html(mjmlContent, {
       beautify,
       filePath: path,
+      ignoreIncludes: false,
       keepComments,
       minify,
       mjmlConfigPath: mjmlConfigPath

@@ -1,4 +1,3 @@
-declare module 'mjml-migrate'
 declare module 'mjml'
 declare module 'node-mailjet'
 declare module 'phantom'
