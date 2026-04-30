@@ -16,5 +16,9 @@ test/**
 ISSUE_TEMPLATE.md
 tsconfig.json
 tslint.json
+esbuild.js
 .env
 .idea/**
+node_modules/**
+!node_modules/@biomejs/**
+!node_modules/prettier/**

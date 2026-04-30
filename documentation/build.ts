@@ -1,9 +1,9 @@
+/// <reference types="node" />
 'use strict'
 
 import 'dotenv/config'
 import * as fs from 'fs'
 import * as path from 'path'
-import fetch from 'node-fetch'
 
 import * as hljs from 'highlight.js'
 
@@ -58,7 +58,7 @@ async function run(): Promise<void> {
     </html>`
 
   if (documentation) {
-    fs.writeFile(documentationHTML, documentation, (err) => {
+    fs.writeFile(documentationHTML, documentation, (err: NodeJS.ErrnoException | null) => {
       if (err) {
         return console.log(err)
       }
@@ -102,19 +102,22 @@ function clean(): void {
 async function getContent(): Promise<string> {
   let docs: string[] = [
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/guide.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/install.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/getting_started.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/basic.md',
-    'https://api.github.com/repos/mjmlio/mjml/contents/doc/components.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/components_1.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-body/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/components_2.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/head_components.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-attributes/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-breakpoint/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-font/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-html-attributes/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-preview/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-style/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-head-title/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/body_components.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-accordion/README.md',
-    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-body/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-button/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-carousel/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-column/README.md',
@@ -130,9 +133,19 @@ async function getContent(): Promise<string> {
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-table/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-text/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-wrapper/README.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/ending-tags.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/community-components.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/ports.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/mjml-bar-chart.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/mjml-chart.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/mjml-chartjs.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/mjml-qr-code.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/mjml-mso-button.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/packages/mjml-validator/README.md',
     'https://api.github.com/repos/mjmlio/mjml/contents/doc/create.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/using_mjml_in_json.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/tooling.md',
+    'https://api.github.com/repos/mjmlio/mjml/contents/doc/community-contributions.md',
   ]
 
   let content: string = ''
@@ -160,19 +173,14 @@ async function getImages(content: string): Promise<string> {
   let imagePath: string[] = []
   let pattern: RegExp = /<img\s+[^>]*?src=("|')([^"']+)\1/g
 
-  let match: RegExpMatchArray
+  let match: RegExpExecArray | null
   while ((match = pattern.exec(content))) {
     if (imagePath.indexOf(match[2]) == -1) {
       imagePath.push(match[2])
 
       let res = await fetch(match[2])
-
-      await new Promise((resolve, reject) => {
-        const fileStream = fs.createWriteStream(`${imagesFolder}/${path.basename(match[2])}`)
-        res.body.pipe(fileStream)
-        res.body.on('error', reject)
-        fileStream.on('finish', () => resolve(void 0))
-      })
+      let image = Buffer.from(await res.arrayBuffer())
+      fs.writeFileSync(`${imagesFolder}/${path.basename(match[2])}`, image)
     }
   }
 
@@ -219,7 +227,7 @@ async function tryItLive(html: string): Promise<string> {
 
   html = html.replace(/href=\"\/try-it-live\//gi, 'href="https://mjml.io/try-it-live/')
 
-  let match
+  let match: RegExpExecArray | null
   while (
     (match =
       /<a[^>]*?href\s*=\s*['"](https?:\/\/mjml\.io\/try-it-live\/([^"']*?))['"][^>]*?>/gi.exec(
@@ -231,9 +239,13 @@ async function tryItLive(html: string): Promise<string> {
     if (tryItLive.indexOf(match[2]) == -1) {
       let response = await fetch(match[1])
 
-      let mjmlMatch: RegExpExecArray = /"value":*?["']([\s\S]*?)["']*?"}/gi.exec(
+      let mjmlMatch = /"value":*?["']([\s\S]*?)["']*?"}/gi.exec(
         await response.text(),
       )
+
+      if (!mjmlMatch) {
+        continue
+      }
 
       mjmlMatch[1]
         .replace(/\\"/g, '"')
