@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, statSync } from 'fs'
-import { basename, dirname, join as joinPath, parse as parsePath, isAbsolute } from 'path'
+import { basename, dirname, join as joinPath, parse as parsePath, isAbsolute, relative } from 'path'
 import { TextDocument, TextEditor, Uri, window, workspace } from 'vscode'
 
 import mime from 'mime'
@@ -144,6 +144,66 @@ function encodeImage(filePath: string, original: string): string {
   return original
 }
 
+export function warnAboutIncludes(mjmlContent: string, mjmlPath?: string): void {
+  const includeRegex = /<mj-include\s+[^>]*path=["']([^"']+)["']/g
+  const includes: string[] = []
+  let match: RegExpExecArray | null
+
+  while ((match = includeRegex.exec(mjmlContent)) !== null) {
+    includes.push(match[1])
+  }
+
+  if (includes.length === 0) {
+    return
+  }
+
+  const allowIncludes = workspace.getConfiguration('mjml').get<boolean>('allowIncludes', false)
+
+  if (!allowIncludes) {
+    window.showWarningMessage(
+      `This file contains ${includes.length} mj-include tag(s) but include processing is disabled. ` +
+        `Enable 'mjml.allowIncludes' in settings to process them.`,
+    )
+    return
+  }
+
+  if (!mjmlPath) {
+    return
+  }
+
+  const coveredPaths = getIncludePath(mjmlPath) ?? []
+  const fileDir = dirname(mjmlPath)
+  const uncovered: string[] = []
+
+  for (const inc of includes) {
+    const resolvedPath = isAbsolute(inc) ? inc : joinPath(fileDir, inc)
+    const resolvedDir = dirname(resolvedPath)
+
+    // Covered if resolvedDir is the same as or inside the file's own directory
+    const relToFileDir = relative(fileDir, resolvedDir)
+    if (!relToFileDir.startsWith('..') && !isAbsolute(relToFileDir)) {
+      continue
+    }
+
+    // Covered if resolvedDir is under any allowlisted includePath entry
+    const covered = coveredPaths.some((ip) => {
+      const rel = relative(ip, resolvedDir)
+      return !rel.startsWith('..') && !isAbsolute(rel)
+    })
+
+    if (!covered) {
+      uncovered.push(inc)
+    }
+  }
+
+  if (uncovered.length > 0) {
+    window.showInformationMessage(
+      `${uncovered.length} mj-include path(s) may be outside the allowed directories. ` +
+        `Add their parent folders to 'mjml.includePath': ${uncovered.join(', ')}`,
+    )
+  }
+}
+
 export async function renderMJML(
   cb: (content: string) => any,
   fixImg?: boolean,
@@ -159,6 +219,8 @@ export async function renderMJML(
     window.showWarningMessage('This is not a MJML document!')
     return
   }
+
+  warnAboutIncludes(activeTextEditor.document.getText(), activeTextEditor.document.uri.fsPath)
 
   const result = await mjmlToHtml(
     activeTextEditor.document.getText(),
