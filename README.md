@@ -47,33 +47,69 @@ The following command is available:
 
 ## Settings
 
-| Name                              | Default   | Description                                                                                                       |
-| --------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------- |
-| `mjml.autoPreview`                | `false`   | Automatically update preview when switching between MJML documents.                                               |
-| `mjml.beautifyHtmlOutput`         | `false`   | Beautify HTML output. (Works when `mjml.minifyHtmlOutput` aren't enabled.)                                        |
-| `mjml.beautify`                   | `{}`      | Prettier options for beautifying MJML. (Priority: .prettierrc > mjml.beautify > defaults). See [Prettier options](https://prettier.io/docs/en/options.html). |
-| `mjml.exportType`                 | `.html`   | Specifies the file type of the output file.                                                                       |
-| `mjml.keepComments`               | `true`    | Keep custom comments in HTML output when exporting MJML files.                                                    |
-| `mjml.lintEnable`                 | `true`    | Enable/disable MJML linter (requires restart).                                                                    |
-| `mjml.lintWhenTyping`             | `true`    | Whether the linter is run on type or on save.                                                                     |
-| `mjml.mailFromName`               | ` `       | Sender name.                                                                                                      |
-| `mjml.mailRecipients`             | ` `       | Comma separated list of recipients email addresses.                                                               |
-| `mjml.mailSender`                 | ` `       | Sender email address. (Mailjet: must be a verified sender.)                                                       |
-| `mjml.mailSubject`                | ` `       | Email subject.                                                                                                    |
-| `mjml.mailer`                     | `mailjet` | Send email with Nodemailer or Mailjet. Possible values are 'nodemailer' and 'mailjet'. See examples of [Nodemailer config](https://github.com/mjmlio/vscode-mjml?tab=readme-ov-file#nodemailer-configuration)                           |
-| `mjml.mailjetAPIKey`              | ` `       | Mailjet API Key.                                                                                                  |
-| `mjml.mailjetAPISecret`           | ` `       | Mailjet API Secret.                                                                                               |
-| `mjml.minifyHtmlOutput`           | `true`    | Minify HTML output.                                                                                               |
-| `mjml.nodemailer`                 | `{}`      | Nodemailer configuration. Please see the [Nodemailer](https://nodemailer.com) documentation for more information. |
-| `mjml.preserveFocus`              | `true`    | Preserve focus of Text Editor after preview open.                                                                 |
-| `mjml.updateWhenTyping`           | `true`    | Update preview when typing.                                                                                       |
-| `mjml.previewBackgroundColor`     | `#FFFFFF` | Preview background color.                                                                                         |
-| `mjml.autoClosePreview`           | `true`    | Automatically close preview when all open MJML documents have been closed.                                        |
-| `mjml.showSaveDialog`             | `false`   | Show the save as dialog instead of input box.                                                                     |
-| `mjml.templateGallery`            | `false`   | Show the template gallery instead of quick pick.                                                                  |
-| `mjml.templateGalleryAutoClose`   | `true`    | Automatically close template gallery when selecting a template.                                                   |
-| `mjml.switchOnSeparateFileChange` | `true`    | Automatically switch previews when editing a different file.                                                      |
-| `mjml.mjmlConfigPath`             | ` `       | The path or directory of the .mjmlconfig (or .mjmlconfig.js) file (for custom components use)                     |
+| Name                              | Default   | Description                                                                                                                                                                                                   |
+| --------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `mjml.autoClosePreview`           | `true`    | Automatically close preview when all open MJML documents have been closed.                                                                                                                                    |
+| `mjml.allowIncludes`              | `false`   | Enable `mj-include` processing. Disabled by default for security.                                                                                                                                             |
+| `mjml.autoPreview`                | `false`   | Automatically update preview when switching between MJML documents.                                                                                                                                           |
+| `mjml.beautify`                   | `{}`      | Prettier options for beautifying MJML. (Priority: .prettierrc > mjml.beautify > defaults). See [Prettier options](https://prettier.io/docs/en/options.html).                                                  |
+| `mjml.beautifyHtmlOutput`         | `false`   | Beautify HTML output. (Works when `mjml.minifyHtmlOutput` aren't enabled.)                                                                                                                                    |
+| `mjml.exportType`                 | `.html`   | Specifies the file type of the output file.                                                                                                                                                                   |
+| `mjml.includePath`                | `[]`      | Additional directories to allow for `<mj-include>` lookups when `mjml.allowIncludes` is enabled. Supports absolute paths, or paths relative to the workspace root.                                            |
+| `mjml.keepComments`               | `true`    | Keep custom comments in HTML output when exporting MJML files.                                                                                                                                                |
+| `mjml.lintEnable`                 | `true`    | Enable/disable MJML linter (requires restart).                                                                                                                                                                |
+| `mjml.lintWhenTyping`             | `true`    | Whether the linter is run on type or on save.                                                                                                                                                                 |
+| `mjml.mailer`                     | `mailjet` | Send email with Nodemailer or Mailjet. Possible values are 'nodemailer' and 'mailjet'. See examples of [Nodemailer config](https://github.com/mjmlio/vscode-mjml?tab=readme-ov-file#nodemailer-configuration) |
+| `mjml.mailFromName`               | ` `       | Sender name.                                                                                                                                                                                                  |
+| `mjml.mailjetAPIKey`              | ` `       | Mailjet API Key.                                                                                                                                                                                              |
+| `mjml.mailjetAPISecret`           | ` `       | Mailjet API Secret.                                                                                                                                                                                           |
+| `mjml.mailRecipients`             | ` `       | Comma separated list of recipients email addresses.                                                                                                                                                           |
+| `mjml.mailSender`                 | ` `       | Sender email address. (Mailjet: must be a verified sender.)                                                                                                                                                   |
+| `mjml.mailSubject`                | ` `       | Email subject.                                                                                                                                                                                                |
+| `mjml.minifyHtmlOutput`           | `true`    | Minify HTML output.                                                                                                                                                                                           |
+| `mjml.mjmlConfigPath`             | ` `       | The path or directory of the .mjmlconfig (or .mjmlconfig.js) file (for custom components use)                                                                                                                 |
+| `mjml.nodemailer`                 | `{}`      | Nodemailer configuration. Please see the [Nodemailer](https://nodemailer.com) documentation for more information.                                                                                             |
+| `mjml.preserveFocus`              | `true`    | Preserve focus of Text Editor after preview open.                                                                                                                                                             |
+| `mjml.previewBackgroundColor`     | `#FFFFFF` | Preview background color.                                                                                                                                                                                     |
+| `mjml.showSaveDialog`             | `false`   | Show the save as dialog instead of input box.                                                                                                                                                                 |
+| `mjml.switchOnSeparateFileChange` | `true`    | Automatically switch previews when editing a different file.                                                                                                                                                  |
+| `mjml.templateGallery`            | `false`   | Show the template gallery instead of quick pick.                                                                                                                                                              |
+| `mjml.templateGalleryAutoClose`   | `true`    | Automatically close template gallery when selecting a template.                                                                                                                                               |
+| `mjml.updateWhenTyping`           | `true`    | Update preview when typing.                                                                                                                                                                                   |
+
+### Include security settings (`mjml.allowIncludes` and `mjml.includePath`)
+
+MJML 5 disables include processing by default for security.
+
+- Set `mjml.allowIncludes` to `true` to enable `<mj-include>` processing.
+- Keep `mjml.allowIncludes` as `false` (default) to ignore all includes.
+- Use `mjml.includePath` to allow includes outside the current template base path.
+
+When includes are enabled:
+
+- Includes in the same folder (or subfolders) as the current MJML file are allowed.
+- Includes outside that folder are denied unless the target folder is listed in `mjml.includePath`.
+
+`mjml.includePath` accepts absolute paths or workspace-relative paths.
+
+Correct JSON example:
+
+```json
+{
+    "mjml.allowIncludes": true,
+    "mjml.includePath": ["resources/templates", "shared/partials"]
+}
+```
+
+Settings UI note:
+
+- In the Settings UI, add each include path as a separate array item.
+- Do **not** paste a full JSON array as one item (for example `"[\"resources/templates\"]"`).
+
+Scope note:
+
+- Workspace settings override User settings.
+- If include behavior is unexpected, check both User and Workspace values for `mjml.allowIncludes` and `mjml.includePath`.
 
 ## Snippets
 

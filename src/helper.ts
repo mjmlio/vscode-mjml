@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, statSync } from 'fs'
 import { basename, dirname, join as joinPath, parse as parsePath, isAbsolute } from 'path'
-import { TextDocument, TextEditor, window, workspace } from 'vscode'
+import { TextDocument, TextEditor, Uri, window, workspace } from 'vscode'
 
 import mime from 'mime'
 
@@ -27,11 +27,14 @@ export async function mjmlToHtml(
     }
 
     const keepComments = workspace.getConfiguration('mjml').get<boolean>('keepComments', true)
+    const allowIncludes = workspace.getConfiguration('mjml').get<boolean>('allowIncludes', false)
+    const includePath = getIncludePath(path)
 
     return await mjml2html(mjmlContent, {
       beautify,
       filePath: path,
-      ignoreIncludes: false,
+      includePath: allowIncludes ? includePath : undefined,
+      ignoreIncludes: !allowIncludes,
       keepComments,
       minify,
       mjmlConfigPath: mjmlConfigPath
@@ -64,11 +67,60 @@ export function getPath(): string {
 }
 
 function getCWD(mjmlPath?: string): string {
-  if (workspace.rootPath) {
-    return workspace.rootPath
+  if (mjmlPath) {
+    const workspaceFolder = workspace.getWorkspaceFolder(Uri.file(mjmlPath))
+    if (workspaceFolder) {
+      return workspaceFolder.uri.fsPath
+    }
+  }
+
+  if (workspace.workspaceFolders && workspace.workspaceFolders.length > 0) {
+    return workspace.workspaceFolders[0].uri.fsPath
   }
 
   return mjmlPath ? parsePath(mjmlPath).dir : ''
+}
+
+function getIncludePath(mjmlPath?: string): string[] | undefined {
+  const config = workspace.getConfiguration('mjml').get<string | string[]>('includePath', [])
+  const includePath = normalizeIncludePathConfig(config)
+  const basePath = getCWD(mjmlPath)
+
+  const normalized = includePath
+    .map((value: string) => value.trim())
+    .filter((value: string) => value.length > 0)
+    .map((value: string) => (isAbsolute(value) ? value : joinPath(basePath, value)))
+
+  return normalized.length > 0 ? normalized : undefined
+}
+
+function normalizeIncludePathConfig(config: string | string[]): string[] {
+  const rawValues = Array.isArray(config) ? config : [config]
+  const expanded = rawValues.flatMap((value: string) => {
+    const trimmed = value.trim()
+    if (!trimmed) {
+      return []
+    }
+
+    if (trimmed.startsWith('[') || trimmed.startsWith('{') || trimmed.startsWith('"')) {
+      try {
+        const parsed = JSON.parse(trimmed)
+        if (Array.isArray(parsed)) {
+          return parsed.map((entry: any) => String(entry))
+        }
+
+        if (typeof parsed === 'string') {
+          return [parsed]
+        }
+      } catch {
+        // Keep raw value if it's not valid JSON.
+      }
+    }
+
+    return [trimmed]
+  })
+
+  return expanded
 }
 
 function encodeImage(filePath: string, original: string): string {
