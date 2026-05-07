@@ -3,7 +3,7 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
-### [2.3.1] (2026-05-07)
+### [3.0.0] (2026-05-07)
 
 #### BREAKING CHANGE
 The MJML 5.1.0 update addressed CVE-2025-67898 (arbitrary file inclusion vulnerability) by flipping `ignoreIncludes` default from `false` to `true`. This extension now aligns with MJML's secure-by-default model therefore `mj-include` processing is now opt-in by default via `mjml.allowIncludes` settings.
