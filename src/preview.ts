@@ -11,7 +11,7 @@ import {
   window,
   workspace,
 } from 'vscode'
-import { fixImages, isMJMLFile, mjmlToHtml } from './helper'
+import { fixImages, isMJMLFile, mjmlToHtml, warnAboutIncludes } from './helper'
 
 export default class Preview {
   private openedDocuments: TextDocument[] = []
@@ -25,6 +25,10 @@ export default class Preview {
     this.subscriptions.push(
       commands.registerCommand('mjml.previewToSide', () => {
         if (window.activeTextEditor) {
+          warnAboutIncludes(
+            window.activeTextEditor.document.getText(),
+            window.activeTextEditor.document.uri.fsPath,
+          )
           this.previewOpen = true
           this.displayWebView(window.activeTextEditor.document)
         } else {

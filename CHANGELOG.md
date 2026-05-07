@@ -3,10 +3,19 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+### [3.0.0] (2026-05-07)
+
+#### BREAKING CHANGE
+The MJML 5.1.0 update addressed CVE-2025-67898 (arbitrary file inclusion vulnerability) by flipping `ignoreIncludes` default from `false` to `true`. This extension now aligns with MJML's secure-by-default model therefore `mj-include` processing is now opt-in by default via `mjml.allowIncludes` settings.
+
+#### Other changes
+- [update] MJML to v5.2.0
+- [security] `mj-include` is now opt-in via new `mjml.allowIncludes` setting (default: `false`) to align with MJML 5 secure defaults
+- [fix] Added `mjml.includePath` setting to allowlist include directories outside the template base when includes are enabled
+
 ### [2.3.0] (2026-04-28)
 
 - [update] MJML to v5.1.0
-- [fix] `mj-include` now works correctly (MJML 5 changed the default for `ignoreIncludes` to `true`; explicitly restored to `false` to preserve existing behaviour)
 - [chore] Removed stale `mjml-migrate` type declaration (package removed in MJML 5)
 - [new] `.mjmlconfig` files are now automatically recognised as JSON in the editor (resolves [#21](https://github.com/mjmlio/vscode-mjml/issues/21))
 - [fix] Preview no longer breaks when an HTML comment appears before the opening `<mjml>` tag (resolves [#57](https://github.com/mjmlio/vscode-mjml/issues/57))
