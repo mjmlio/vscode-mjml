@@ -145,6 +145,25 @@ function encodeImage(filePath: string, original: string): string {
 }
 
 export function warnAboutIncludes(mjmlContent: string, mjmlPath?: string): void {
+  const allowIncludes = workspace.getConfiguration('mjml').get<boolean>('allowIncludes', false)
+
+  if (!allowIncludes) {
+    const includeTagCount = (mjmlContent.match(/<mj-include\b/gi) ?? []).length
+    if (includeTagCount === 0) {
+      return
+    }
+
+    window.showWarningMessage(
+      `This file contains ${includeTagCount} mj-include tag(s) but include processing is disabled. ` +
+        `Enable 'mjml.allowIncludes' in settings to process them.`,
+    )
+    return
+  }
+
+  if (!mjmlPath) {
+    return
+  }
+
   const includeRegex = /<mj-include\s+[^>]*path=["']([^"']+)["']/g
   const includes: string[] = []
   let match: RegExpExecArray | null
@@ -154,20 +173,6 @@ export function warnAboutIncludes(mjmlContent: string, mjmlPath?: string): void 
   }
 
   if (includes.length === 0) {
-    return
-  }
-
-  const allowIncludes = workspace.getConfiguration('mjml').get<boolean>('allowIncludes', false)
-
-  if (!allowIncludes) {
-    window.showWarningMessage(
-      `This file contains ${includes.length} mj-include tag(s) but include processing is disabled. ` +
-        `Enable 'mjml.allowIncludes' in settings to process them.`,
-    )
-    return
-  }
-
-  if (!mjmlPath) {
     return
   }
 
