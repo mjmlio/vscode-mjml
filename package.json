@@ -2,7 +2,7 @@
   "name": "vscode-mjml",
   "displayName": "MJML Official",
   "description": "MJML preview, lint, compile for Visual Studio Code.",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "publisher": "mjmlio",
   "license": "MIT",
   "readme": "README.md",
@@ -314,7 +314,7 @@
     "@types/mime": "^3.0.4",
     "dotenv": "^17.2.3",
     "mime": "^3.0.0",
-    "mjml": "^5.2.0",
+    "mjml": "^5.2.1",
     "node-mailjet": "^6.0.11",
     "nodemailer": "^7.0.10",
     "prettier": "^3.3.3"
