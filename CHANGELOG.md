@@ -3,6 +3,10 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+### [3.0.1] (2026-05-12)
+
+- [update] MJML to v5.2.1
+
 ### [3.0.0] (2026-05-07)
 
 #### BREAKING CHANGE
