@@ -3,6 +3,16 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+### [3.0.3] (2026-06-15)
+
+- [fix] Register MJML document formatting provider so "Format Document" works without "no formatter installed" errors.
+- [update] esbuild to v0.28.1
+
+### [3.0.2] (2026-05-29)
+
+- [update] MJML to v5.3.0
+- [security] updated production dependencies to resolve security vulnerabilities in porduction (dotenv, mime, nodemailer) and development (typescript)
+
 ### [3.0.1] (2026-05-12)
 
 - [update] MJML to v5.2.1
