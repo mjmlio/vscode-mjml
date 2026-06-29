@@ -15,6 +15,7 @@ declare interface Templates {
 }
 
 declare interface Attachments {
+  ContentType?: string
   'Content-type'?: string | null
   cid?: string
   content?: any

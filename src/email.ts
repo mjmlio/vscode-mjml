@@ -148,9 +148,29 @@ export default class Email {
 
     const recipientList: Array<{ Email: string }> = recipients
       .split(',')
-      .map((emailAddress: string) => {
-        return { Email: emailAddress.trim() }
-      })
+      .map((emailAddress: string) => emailAddress.trim())
+      .filter((emailAddress: string) => emailAddress.length > 0)
+      .map((emailAddress: string) => ({ Email: emailAddress }))
+
+    const from: { Email: string; Name?: string } = { Email: sender }
+    if (typeof fromName === 'string' && fromName.trim().length > 0) {
+      from.Name = fromName
+    }
+
+    const inlinedAttachments = attachments
+      .map((att) => ({
+        ContentType: att['Content-type'] || 'application/octet-stream',
+        Filename: att.Filename,
+        Base64Content: att.content,
+        ContentID: att.Filename,
+      }))
+      .filter(
+        (att) =>
+          typeof att.Filename === 'string' &&
+          att.Filename.length > 0 &&
+          typeof att.Base64Content === 'string' &&
+          att.Base64Content.length > 0,
+      )
 
     try {
       await mailjetClient
@@ -158,15 +178,11 @@ export default class Email {
         .request({
           Messages: [
             {
-              From: { Email: sender, Name: fromName },
+              From: from,
               To: recipientList,
               Subject: subject,
               HTMLPart: html,
-              Attachments: attachments.map((att) => ({
-                'Content-Type': att['Content-type'],
-                Filename: att.Filename,
-                'Base64Content': att.content,
-              })),
+              InlinedAttachments: inlinedAttachments,
             },
           ],
         })
@@ -207,7 +223,7 @@ export default class Email {
             })
           } else {
             attachments.push({
-              'Content-type': mime.getType(filePath),
+              'Content-type': mime.getType(filePath) || 'application/octet-stream',
               Filename: i + '_' + basename(filePath),
               content: readFileSync(filePath).toString('base64'),
               originalPath: imgPaths[i],
