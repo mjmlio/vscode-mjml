@@ -3,6 +3,23 @@
 All notable changes to the "mjml" extension will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
+### [3.0.5] (2026-09-11)
+- [update] MJML to v5.4.1
+- [update] nodemailer to v9.1.1
+- [update/added] overrides for production dependencies (js-yaml, undici, axios, brace-expansion, fast-uri, linkify-it, nopt, qs)
+
+
+### [3.0.4] (2026-06-30)
+
+- [fix] Hardened Mailjet send flow to resolve errors following form-data resolution
+  - sanitised recipients and From name
+  - send images as InlinedAttachments with valid Mailjet fields
+  - default attachment content type to application/octet-stream
+  - update attachment typings for ContentType
+- [update] MJML to v5.4.0
+- [update] nodemailer to v9.0.1
+- [security] overrides for production dependencies to resolve security vulnerabilities (js-yaml, undici, form-data)
+
 ### [3.0.3] (2026-06-15)
 
 - [fix] Register MJML document formatting provider so "Format Document" works without "no formatter installed" errors.
